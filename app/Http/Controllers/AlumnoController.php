@@ -13,7 +13,7 @@ class AlumnoController extends Controller
     public function index()
     {
         return view('lista-alumnos', [
-            'alumnos' => alumnos::all()
+            'alumnos' => alumno::all()
         ]);
     }
 
@@ -22,7 +22,7 @@ class AlumnoController extends Controller
      */
     public function create()
     {
-        //
+        return view('nuevo');
     }
 
     /**
@@ -30,7 +30,21 @@ class AlumnoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|min:3|max:255',
+            'correo' => ['required', 'email', 'max:255'],
+            'fecha_nacimiento' => 'required|min:3|max:255',
+            'ciudad' => 'required|min:3|max:255',
+        ]);
+    
+        $alumno = new Alumno();
+        $alumno->nombre = $request->nombre;
+        $alumno->correo = $request->correo;
+        $alumno->fecha_nacimiento = $request->fecha_nacimiento;
+        $alumno->ciudad = $request->ciudad;
+        $alumno->save();
+
+        return redirect('/alumnos');
     }
 
     /**
@@ -38,7 +52,7 @@ class AlumnoController extends Controller
      */
     public function show(Alumno $alumno)
     {
-        //
+        return view('alumnos.show-alumno', compact('alumno'));
     }
 
     /**
@@ -46,7 +60,7 @@ class AlumnoController extends Controller
      */
     public function edit(Alumno $alumno)
     {
-        //
+        return view('alumnos.edit-alumno', compact('alumno'));
     }
 
     /**
@@ -54,7 +68,20 @@ class AlumnoController extends Controller
      */
     public function update(Request $request, Alumno $alumno)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|min:3|max:255',
+            'correo' => ['required', 'email', 'max:255'],
+            'fecha_nacimiento' => 'required|min:3|max:255',
+            'ciudad' => 'required|min:3|max:255',
+        ]);
+
+        $alumno->nombre = $request->nombre;
+        $alumno->correo = $request->correo;
+        $alumno->fecha_nacimiento = $request->fecha_nacimiento;
+        $alumno->ciudad = $request->ciudad;
+        $alumno->save();
+
+        return redirect()->route('alumnos.show', $alumno);
     }
 
     /**
@@ -62,6 +89,7 @@ class AlumnoController extends Controller
      */
     public function destroy(Alumno $alumno)
     {
-        //
+        $alumno->delete();
+        return redirect()->route('alumnos.index');
     }
 }
