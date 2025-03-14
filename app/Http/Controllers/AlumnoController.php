@@ -12,7 +12,9 @@ class AlumnoController extends Controller
      */
     public function index()
     {
-        //
+        return view('lista-alumnos', [
+            'alumnos' => alumnos::all()
+        ]);
     }
 
     /**
