@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Alumno;
+
 test('Titulo-principal', function () {
     $response = $this->get('/alumnos');
     $response->assertSee('Lista de Alumnos');
@@ -39,7 +41,23 @@ test('crear-alumno', function () {
         'ciudad' => 'Guadalajara',
     ]);
 
-    $response->assertStatus(302);
+    $this->assertDatabaseHas('/alumnos', [
+        'nombre' => 'Test',
+        'correo' => 'test@mail.com',
+        'fecha_nacimiento' => '00/00/0000',
+        'ciudad' => 'Guadalajara',
+    ]);
+
+    //$response->assertStatus(302);
+    $response->assertRedirect('/alumnos');
+});
+
+test('crear-alumno', function () {
+    $alumno = Alumno::factory()->make();
+
+    $response = $this->post('/alumnos', $alumno->toArray());
+
+    $this->assertDatabaseHas('alumnos', $alumno->toArray());
     $response->assertRedirect('/alumnos');
 });
 
