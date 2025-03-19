@@ -18,6 +18,7 @@
     @endif
     <form action="/alumnos" method="POST">
         @csrf
+        <h1>Nuevo Alumno</h1>
         <label for="nombre">Nombre</label>
         <input type="text" name="nombre" value="{{ old('nombre') }}">
         <br>
