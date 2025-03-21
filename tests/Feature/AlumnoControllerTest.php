@@ -2,7 +2,7 @@
 
 use App\Models\Alumno;
 
-test('Titulo-principal', function () {
+test('muestra-listado-alumnos', function () {
     $response = $this->get('/alumnos');
     $response->assertSee('Lista de Alumnos');
 
@@ -11,45 +11,36 @@ test('Titulo-principal', function () {
 
 test('muestra-formulario-crear-alumno', function () {
     $response = $this->get('/alumnos/create');
-    $response->assertSee('Nuevo Alumno');
-    //    ->assertSeeHtml('nombre="nombre"');
+    $response->assertSee('Nuevo Alumno')
+        ->assertSeeHtml('name="nombre"', false);
 
     $response->assertStatus(200);
 });
 
 test('muestra-formulario-editar-alumno', function () {
-    $response = $this->get('/alumnos/#/edit'); //
-    $response->assertSee('Editar alumno');
-    //    ->assertSeeHtml('nombre="nombre"');
+    $alumno = Alumno::factory()->create();
 
-    $response->assertStatus(200);
+    $response = $this->get(route('alumnos.edit', $alumno->id));
+
+    $response->assertSee('Editar alumno', $alumno->id)
+        ->assertSeeHtml($alumno->nombre)
+        ->assertSeeHtml($alumno->correo)
+        ->assertSeeHtml($alumno->fecha_nacimiento)
+        ->assertSeeHtml($alumno->ciudad)
+        ->assertStatus(200);
 });
 
 test('muestra-detalles-alumno', function () {
-    $response = $this->get('/alumnos/#'); //
-    $response->assertSee('Alumno');
-    //    ->assertSeeHtml('nombre="nombre"');
+    $alumno = Alumno::factory()->create();
 
-    $response->assertStatus(200);
-});
+    $response = $this->get(route('alumnos.show', $alumno->id));
 
-test('crear-alumno', function () {
-    $response = $this->post('/alumnos/create', [
-        'nombre' => 'Test',
-        'correo' => 'test@mail.com',
-        'fecha_nacimiento' => '00/00/0000',
-        'ciudad' => 'Guadalajara',
-    ]);
-
-    $this->assertDatabaseHas('/alumnos', [
-        'nombre' => 'Test',
-        'correo' => 'test@mail.com',
-        'fecha_nacimiento' => '00/00/0000',
-        'ciudad' => 'Guadalajara',
-    ]);
-
-    //$response->assertStatus(302);
-    $response->assertRedirect('/alumnos');
+    $response->assertSee('Alumno # ', $alumno->id)
+        ->assertSeeHtml($alumno->nombre)
+        ->assertSeeHtml($alumno->correo)
+        ->assertSeeHtml($alumno->fecha_nacimiento)
+        ->assertSeeHtml($alumno->ciudad)
+        ->assertStatus(200);
 });
 
 test('crear-alumno', function () {
@@ -62,25 +53,34 @@ test('crear-alumno', function () {
 });
 
 test('editar-alumno', function () {
-    $response = $this->post('/alumnos', [
+    $alumno = Alumno::factory()->create();
+
+    $nuevosDatos = [
         'nombre' => 'Test',
-        'correo' => 'test@mail.com',
-        'fecha_nacimiento' => '00/00/0000',
+        'correo' => 'Test@example.com',
+        'fecha_nacimiento' => '28/09/2002',
+        'ciudad' => 'Guadalajara',
+    ];
+
+    $response = $this->put('/alumnos/' . $alumno->id, $nuevosDatos);
+
+    $this->assertDatabaseHas('alumnos', [
+        'nombre' => 'Test',
+        'correo' => 'Test@example.com',
+        'fecha_nacimiento' => '28/09/2002',
         'ciudad' => 'Guadalajara',
     ]);
 
-    $response->assertStatus(302);
-    $response->assertRedirect('/alumnos');
+    $response->assertRedirect('/alumnos/' . $alumno->id);
+
+    $alumno->delete();
 });
 
 test('eliminar-alumno', function () {
-    $response = $this->post('/alumnos', [
-        'nombre' => 'Test',
-        'correo' => 'test@mail.com',
-        'fecha_nacimiento' => '00/00/0000',
-        'ciudad' => 'Guadalajara',
-    ]);
+    $alumno = Alumno::factory()->create();
 
-    $response->assertStatus(302);
+    $response = $this->delete('/alumnos/' . $alumno->id);
+
+    $this->assertDatabaseMissing('alumnos', ['id' => $alumno->id,]);
     $response->assertRedirect('/alumnos');
 });

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Alumno;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class AlumnoSeeder extends Seeder
 {
@@ -13,14 +14,6 @@ class AlumnoSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        Alumno::factory()->count(50)->create();
-        Alumno::make([
-            //ejemplo especifico
-        ]);
-
-        DB::table('alumnos')->insert([
-            //ejemplo especifico
-        ]);
+        Alumno::factory()->count(10)->create();
     }
 }
